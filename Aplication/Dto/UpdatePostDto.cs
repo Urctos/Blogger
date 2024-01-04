@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Aplication.Mappings;
+using AutoMapper;
+using Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +9,14 @@ using System.Threading.Tasks;
 
 namespace Aplication.Dto;
 
-public class UpdatePostDto
+public class UpdatePostDto : IMap
 {
     public int Id { get; set; }
     public string Content { get; set; }
+
+    public void Mapping(Profile profile)
+    {
+        profile.CreateMap<UpdatePostDto, Post>();
+    }
 }
 
