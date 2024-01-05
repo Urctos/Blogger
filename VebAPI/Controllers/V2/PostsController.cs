@@ -1,14 +1,17 @@
 ﻿using Aplication.Dto;
 using Aplication.Interfaces;
+using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace WebAPI.Controllers;
+namespace WebAPI.Controllers.V2;
 
+[ApiExplorerSettings(IgnoreApi = true)]
+[ApiVersion("2.0")]
 [Route("api/[controller]")]
 [ApiController]
-[ApiExplorerSettings(GroupName = "v1")]
+//[ApiExplorerSettings(GroupName = "v1")]
 public class PostsController : ControllerBase
 {
     private readonly IPostService _postService;
@@ -22,7 +25,13 @@ public class PostsController : ControllerBase
     public IActionResult Get()
     {
         var posts = _postService.GetAllPost();
-        return Ok(posts);
+        return Ok(
+            new
+            {
+                Post = posts,
+                Count = posts.Count()
+            }
+            );
     }
 
     [SwaggerOperation(Summary = "Retrieves a specific post by unique Id")]
