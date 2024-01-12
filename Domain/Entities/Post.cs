@@ -13,15 +13,14 @@ public class Post : AuditableEntity
 
     [Required]
     [MaxLength(100)]
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     [Required]
     [MaxLength(2000)]
-    public string Content { get; set; }
+    public string? Content { get; set; }
 
     public Post()
-    {
-        
+    {      
     }
 
     public Post(int id, string title, string content)
@@ -29,6 +28,5 @@ public class Post : AuditableEntity
         Id = id;
         Title = title;
         Content = content;
-
     }
 }

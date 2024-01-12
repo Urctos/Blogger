@@ -61,7 +61,6 @@ public class PostsController : ControllerBase
     {
         _postService.DeletePost(id);
         return NoContent();
-
     }
 }
 

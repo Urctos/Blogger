@@ -1,7 +1,6 @@
 ﻿
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace WebAPI.Installers
 {

@@ -1,6 +1,4 @@
 ﻿
-
-
 namespace WebAPI.Installers
 {
     public static class InstallerExtensions
