@@ -1,5 +1,5 @@
-﻿using Aplication.Dto;
-using Aplication.Interfaces;
+﻿using Application.Dto;
+using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

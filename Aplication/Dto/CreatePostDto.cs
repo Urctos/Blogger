@@ -1,4 +1,4 @@
-﻿using Aplication.Mappings;
+﻿using Application.Mappings;
 using AutoMapper;
 using Domain.Entities;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aplication.Dto;
+namespace Application.Dto;
 
 public class CreatePostDto : IMap
 {

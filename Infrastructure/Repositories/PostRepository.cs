@@ -1,5 +1,7 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces;
+using Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,29 +12,59 @@ namespace Infrastructure.Repositories;
 
 public class PostRepository : IPostRepository
 {
-    private static readonly ISet<Post> _post = new HashSet<Post>()
-    {
-        new Post(1, "Tytuł 1", "Treść 1"),
-        new Post(2, "Tytuł 2", "Treść 2"),
-        new Post(3, "Tytuł 3", "Treść 3"),
+    private readonly BloggerContext _context;
 
-    };   
+    public PostRepository(BloggerContext context)
+    {
+        _context = context;
+    }
+
+
 
     public IEnumerable<Post> GetAll()
     {
-        return _post;
+        //return _context.Posts;
+
+        return _context.Posts
+        .Select(post => new Post
+        {
+            Id = post.Id,
+            Title = post.Title ?? string.Empty, 
+            Content = post.Content ?? string.Empty
+            
+        }).ToList();
+
     }
 
     public Post GetById(int id)
     {
-        return _post.SingleOrDefault(x => x.Id == id);
+        //return _context.Posts.SingleOrDefault(x => x.Id == id);
+
+        var post = _context.Posts
+        .Where(x => x.Id == id)
+        .Select(p => new {
+            p.Id,
+            Title = p.Title ?? string.Empty, 
+            Content = p.Content ?? string.Empty,
+        })
+        .SingleOrDefault();
+
+        if (post == null)
+            return null;
+
+        return new Post
+        {
+            Id = post.Id,
+            Title = post.Title,
+            Content = post.Content
+        };
     }
 
     public Post Add(Post post)
     {
-        post.Id = _post.Count() + 1;
         post.Created = DateTime.UtcNow;
-        _post.Add(post);
+        _context.Posts.Add(post);
+        _context.SaveChanges();
         return post;
 
     }
@@ -40,11 +72,14 @@ public class PostRepository : IPostRepository
     public void Update(Post post)
     {
         post.LastModified = DateTime.UtcNow;
+        _context.Posts.Update(post);
+        _context.SaveChanges();
 
     }
     public void Delete(Post post)
     {
-        _post.Remove(post);
+        _context.Posts.Remove(post);
+        _context.SaveChanges();
     } 
 }
 

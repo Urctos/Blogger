@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aplication.Mappings
+namespace Application.Mappings
 {
     public class MappingProfile : Profile
     {

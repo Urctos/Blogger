@@ -1,6 +1,6 @@
-﻿using Aplication.Interfaces;
-using Aplication.Mappings;
-using Aplication.Services;
+﻿using Application.Interfaces;
+using Application.Mappings;
+using Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aplication
+namespace Application
 {
     public static class DependencyInjection
     {

@@ -1,5 +1,5 @@
-﻿using Aplication.Dto;
-using Aplication.Interfaces;
+﻿using Application.Dto;
+using Application.Interfaces;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Aplication.Services;
+namespace Application.Services;
 
 public class PostService : IPostService
 {
@@ -42,6 +42,13 @@ public class PostService : IPostService
     public IEnumerable<PostDto> GetAllPost()
     {
         var posts = _postRepository.GetAll();
+        foreach (var post in posts)
+        {
+            if (post.Title == null || post.Content == null)
+            {
+                // Log the details of the post that has null values
+            }
+        }
         return _mapper.Map<IEnumerable<PostDto>>(posts);
     }
 
