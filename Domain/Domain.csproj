@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Cosmonaut" Version="2.11.3" />
+    <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.5.1" />
+  </ItemGroup>
+
 </Project>

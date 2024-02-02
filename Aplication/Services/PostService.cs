@@ -21,49 +21,55 @@ public class PostService : IPostService
         _mapper = mapper;
     }
 
-    public PostDto AddNewPost(CreatePostDto newPost)
+    public async Task<PostDto> AddNewPostAsync(CreatePostDto newPost)
     {
         if (string.IsNullOrEmpty(newPost.Title))
         {
             throw new Exception("Post can not have an empty title.");
         }
             var post = _mapper.Map<Post>(newPost);
-            _postRepository.Add(post);
-            return _mapper.Map<PostDto>(post);
+            var result = await _postRepository.AddAsync(post);
+            return _mapper.Map<PostDto>(result);
         
     }
 
-    public void DeletePost(int id)
+    public async Task DeletePostAsync(int id)
     {
-        var post = _postRepository.GetById(id);
-        _postRepository.Delete(post);
+        var post = await _postRepository.GetByIdAsync(id);
+        await _postRepository.DeleteAsync(post);
     }
 
-    public IEnumerable<PostDto> GetAllPost()
+    public async Task<IEnumerable<PostDto>> GetAllPostAsync(int pageNumber, int pageSize, string sortField, bool ascending)
     {
-        var posts = _postRepository.GetAll();
-        foreach (var post in posts)
-        {
-            if (post.Title == null || post.Content == null)
-            {
-                // Log the details of the post that has null values
-            }
-        }
+        var posts = await _postRepository.GetAllAsync(pageNumber, pageSize, sortField, ascending);
+        //foreach (var post in posts)
+        //{
+        //    if (post.Title == null || post.Content == null)
+        //    {
+        //        // Log the details of the post that has null values
+        //    }
+        //}
         return _mapper.Map<IEnumerable<PostDto>>(posts);
     }
 
-    public PostDto GetPostById(int id)
+    public async Task<int> GetAllPostCountAsync()
     {
-        var post = _postRepository.GetById(id);
+        return await _postRepository.GetAllCountAsync();
+    }
+
+
+    public async Task<PostDto> GetPostByIdAsync(int id)
+    {
+        var post = await _postRepository.GetByIdAsync(id);
         return _mapper.Map<PostDto>(post);
 
     }
 
-    public void UpdatePost(UpdatePostDto updatePost)
+    public async Task UpdatePostAsync(UpdatePostDto updatePost)
     {
-        var existingPost = _postRepository.GetById(updatePost.Id);
+        var existingPost = await _postRepository.GetByIdAsync(updatePost.Id);
         var post = _mapper.Map(updatePost, existingPost);
-        _postRepository.Update(post);
+        await _postRepository.UpdateAsync(post);
     }
 
 }

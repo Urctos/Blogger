@@ -3,9 +3,13 @@ using Application.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using WebAPI.Filters;
+using WebAPI.Helpers;
+using WebAPI.Wrappers;
 
 namespace WebAPI.Controllers.V1;
 
+//[ApiExplorerSettings(IgnoreApi = true)]
 [Route("api/[controller]")]
 [ApiVersion("1.0")]
 [ApiController]
@@ -18,48 +22,61 @@ public class PostsController : ControllerBase
         _postService = postService;
     }
 
+    [SwaggerOperation(Summary = "Retrieves sort fields")]
+    [HttpGet("[action]")]
+    public IActionResult GetSortFields()
+    {
+        return Ok(SortingHelper.GetSortFields().Select(x => x.Key));
+    }
+
     [SwaggerOperation(Summary = "Retrieves all posts")]
     [HttpGet]
-    public IActionResult Get()
+    public async Task<IActionResult> Get([FromQuery] PaginationFilter paginationFilter, [FromQuery] SortingFilter sortingFilter)
     {
-        var posts = _postService.GetAllPost();
-        return Ok(posts);
+        var validPaginationFilter = new PaginationFilter(paginationFilter.PageNumber, paginationFilter.PageSize);
+        var validSortingFilter = new SortingFilter(sortingFilter.SortField, sortingFilter.Ascending);
+
+        var posts = await _postService.GetAllPostAsync(validPaginationFilter.PageNumber, validPaginationFilter.PageSize,
+                                                       validSortingFilter.SortField, validSortingFilter.Ascending);
+        var totalRecords = await _postService.GetAllPostCountAsync();
+
+        return Ok(PaginationHelper.CreatePageResponse(posts, validPaginationFilter, totalRecords));
     }
 
     [SwaggerOperation(Summary = "Retrieves a specific post by unique Id")]
     [HttpGet("{id}")]
-    public IActionResult Get(int id)
+    public async Task<IActionResult> Get(int id)
     {
-        var post = _postService.GetPostById(id);
+        var post = await _postService.GetPostByIdAsync(id);
         if (post == null)
         {
             return NotFound(id);
         }
 
-        return Ok(post);
+        return Ok(new Response<PostDto>(post));
     }
 
     [SwaggerOperation(Summary = "Create a new post")]
     [HttpPost]
-    public IActionResult Create(CreatePostDto newPost)
+    public async Task<IActionResult> Create(CreatePostDto newPost)
     {
-        var post = _postService.AddNewPost(newPost);
-        return Created($"api/posts/{post.Id}", post);
+        var post = await _postService.AddNewPostAsync(newPost);
+        return Created($"api/posts/{post.Id}",new Response<PostDto>(post));
     }
 
     [SwaggerOperation(Summary = "Update a exsisting post")]
     [HttpPut]
-    public IActionResult Update(UpdatePostDto updatePost)
+    public async Task<IActionResult> Update(UpdatePostDto updatePost)
     {
-        _postService.UpdatePost(updatePost);
+        await _postService.UpdatePostAsync(updatePost);
         return NoContent();
     }
 
     [SwaggerOperation(Summary = "Delete a specific post")]
     [HttpDelete("Id")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        _postService.DeletePost(id);
+        await _postService.DeletePostAsync(id);
         return NoContent();
     }
 }
