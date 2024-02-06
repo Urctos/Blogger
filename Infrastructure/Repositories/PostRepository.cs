@@ -15,13 +15,22 @@ public class PostRepository : IPostRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Post>> GetAllAsync(int pageNumber, int pageSize, string sortField, bool ascending)
+    public IQueryable<Post> GetAll()
     {
-        return await _context.Posts.OrderByPropertyName(sortField, ascending).Skip((pageNumber - 1)* pageSize).Take(pageSize).ToListAsync();
+        return _context.Posts.AsQueryable();
+
     }
-    public async Task<int> GetAllCountAsync()
+    public async Task<IEnumerable<Post>> GetAllAsync(int pageNumber, int pageSize, string sortField, bool ascending, string filterBy)
     {
-        return await _context.Posts.CountAsync();
+        return await _context.Posts
+            .Where(m => m.Title.ToLower().Contains(filterBy.ToLower()) || m.Content.ToLower().Contains(filterBy.ToLower()))
+            .OrderByPropertyName(sortField, ascending)
+            .Skip((pageNumber - 1)* pageSize).Take(pageSize)
+            .ToListAsync();
+    }
+    public async Task<int> GetAllCountAsync(string filterBy)
+    {
+        return await _context.Posts.Where(m => m.Title.ToLower().Contains(filterBy.ToLower()) || m.Content.ToLower().Contains(filterBy.ToLower())).CountAsync();
     }
 
     public async Task<Post> GetByIdAsync(int id)
@@ -51,5 +60,7 @@ public class PostRepository : IPostRepository
         await _context.SaveChangesAsync();
         await Task.CompletedTask;
     }
+
+
 }
 

@@ -1,4 +1,7 @@
 ﻿using WebAPI.Installers;
+using Microsoft.AspNetCore.OData;
+using Microsoft.OData.Edm;
+using Microsoft.OData.ModelBuilder;
 
 namespace WebAPI;
 
@@ -15,6 +18,8 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.InstallServicesInAssembly(Configuration);
+        services.AddControllers().AddOData(opt => opt.Count().Filter().OrderBy().Expand().SetMaxTop(100)
+                                 .AddRouteComponents("odata", GetEdmModel()));
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,6 +42,12 @@ public class Startup
         {
             endpoints.MapControllers();
         });
+    }
+    public static IEdmModel GetEdmModel()
+    {
+        var builder = new ODataConventionModelBuilder();
+        builder.EntitySet<Application.Dto.PostDto>("Posts");
+        return builder.GetEdmModel();
     }
 }
 

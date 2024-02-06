@@ -13,12 +13,24 @@ namespace Application.Services;
 
 public class PostService : IPostService
 {
+    public IQueryable<PostDto> GetAllPosts()
+    {
+        var posts = _postRepository.GetAll();
+        return _mapper.ProjectTo<PostDto>(posts);
+    }
+
     private readonly IPostRepository _postRepository;
     private readonly IMapper _mapper;
     public PostService(IPostRepository postRepository, IMapper mapper)
     {
         _postRepository = postRepository;
         _mapper = mapper;
+    }
+
+    public async Task<IEnumerable<PostDto>> GetAllPostAsync(int pageNumber, int pageSize, string sortField, bool ascending, string filterBy)
+    {
+        var posts = await _postRepository.GetAllAsync(pageNumber, pageSize, sortField, ascending, filterBy);
+        return _mapper.Map<IEnumerable<PostDto>>(posts);
     }
 
     public async Task<PostDto> AddNewPostAsync(CreatePostDto newPost)
@@ -39,22 +51,9 @@ public class PostService : IPostService
         await _postRepository.DeleteAsync(post);
     }
 
-    public async Task<IEnumerable<PostDto>> GetAllPostAsync(int pageNumber, int pageSize, string sortField, bool ascending)
+    public async Task<int> GetAllPostCountAsync(string filterBy)
     {
-        var posts = await _postRepository.GetAllAsync(pageNumber, pageSize, sortField, ascending);
-        //foreach (var post in posts)
-        //{
-        //    if (post.Title == null || post.Content == null)
-        //    {
-        //        // Log the details of the post that has null values
-        //    }
-        //}
-        return _mapper.Map<IEnumerable<PostDto>>(posts);
-    }
-
-    public async Task<int> GetAllPostCountAsync()
-    {
-        return await _postRepository.GetAllCountAsync();
+        return await _postRepository.GetAllCountAsync(filterBy);
     }
 
 
@@ -71,6 +70,5 @@ public class PostService : IPostService
         var post = _mapper.Map(updatePost, existingPost);
         await _postRepository.UpdateAsync(post);
     }
-
 }
 

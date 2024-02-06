@@ -2,17 +2,24 @@
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.OData;
+using Microsoft.OData.Edm;
+using Microsoft.OData.ModelBuilder;
 
 namespace WebAPI.Installers;
 
-public  class MvcInstaller : IInstaller
+public class MvcInstaller : IInstaller
 {
     public void InstallServices(IServiceCollection services, IConfiguration Configuration)
     {
         services.AddApplication();
         services.AddInfrastructure();
 
-        services.AddControllers();
+        services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.WriteIndented = true;
+            });
 
         services.AddApiVersioning(x =>
         {
@@ -21,6 +28,8 @@ public  class MvcInstaller : IInstaller
             x.ReportApiVersions = true;
             x.ApiVersionReader = new HeaderApiVersionReader("x-api-version");
         });
+
     }
+
 }
 

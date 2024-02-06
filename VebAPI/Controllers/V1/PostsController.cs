@@ -2,6 +2,7 @@
 using Application.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using Swashbuckle.AspNetCore.Annotations;
 using WebAPI.Filters;
 using WebAPI.Helpers;
@@ -29,18 +30,27 @@ public class PostsController : ControllerBase
         return Ok(SortingHelper.GetSortFields().Select(x => x.Key));
     }
 
-    [SwaggerOperation(Summary = "Retrieves all posts")]
+    [SwaggerOperation(Summary = "Retrieves paged posts")]
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PaginationFilter paginationFilter, [FromQuery] SortingFilter sortingFilter)
+    public async Task<IActionResult> Get([FromQuery] PaginationFilter paginationFilter, [FromQuery] SortingFilter sortingFilter, [FromQuery] string filterBy = "")
     {
         var validPaginationFilter = new PaginationFilter(paginationFilter.PageNumber, paginationFilter.PageSize);
         var validSortingFilter = new SortingFilter(sortingFilter.SortField, sortingFilter.Ascending);
 
         var posts = await _postService.GetAllPostAsync(validPaginationFilter.PageNumber, validPaginationFilter.PageSize,
-                                                       validSortingFilter.SortField, validSortingFilter.Ascending);
-        var totalRecords = await _postService.GetAllPostCountAsync();
+                                                       validSortingFilter.SortField, validSortingFilter.Ascending,
+                                                       filterBy);
+        var totalRecords = await _postService.GetAllPostCountAsync(filterBy);
 
         return Ok(PaginationHelper.CreatePageResponse(posts, validPaginationFilter, totalRecords));
+    }
+
+    [SwaggerOperation(Summary ="Retrives all posts")]
+    [EnableQuery]
+    [HttpGet("[action]")]
+    public IQueryable<PostDto> GetAll()
+    {
+        return _postService.GetAllPosts();
     }
 
     [SwaggerOperation(Summary = "Retrieves a specific post by unique Id")]
