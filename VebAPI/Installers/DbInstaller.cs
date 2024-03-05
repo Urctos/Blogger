@@ -9,7 +9,7 @@ namespace WebAPI.Installers
         public void InstallServices(IServiceCollection services, IConfiguration Configuration)
         {
             services.AddDbContext<BloggerContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("BloggerCS")));
+                options.UseSqlServer(Configuration.GetConnectionString("BloggerDB")));
         }
     }
 }

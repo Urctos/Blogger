@@ -1,13 +1,18 @@
-﻿using Domain.Common;
+﻿using Application.Services;
+using Domain.Common;
 using Domain.Entities;
+using Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Data
 {
-    public class BloggerContext : DbContext
+    public class BloggerContext : IdentityDbContext<ApplicationUser>
     {
-        public BloggerContext(DbContextOptions options) : base(options)
+        private readonly UserResolverService _userService;
+        public BloggerContext(DbContextOptions<BloggerContext> options, UserResolverService userService) : base(options)
         {
+            _userService = userService;
         }
 
         public DbSet<Post> Posts { get; set; }
@@ -21,10 +26,12 @@ namespace Infrastructure.Data
             foreach (var entityEntry in entries)
             {
                 ((AuditableEntity)entityEntry.Entity).LastModified = DateTime.UtcNow;
+                ((AuditableEntity)entityEntry.Entity).LastModifiedBy = _userService.GetUser();
 
                 if (entityEntry.State == EntityState.Added)
                 {
                     ((AuditableEntity)entityEntry.Entity).Created = DateTime.UtcNow;
+                    ((AuditableEntity)entityEntry.Entity).CreateBy = _userService.GetUser();   // literówka do poprawy
                 }
             }
             return await base.SaveChangesAsync();
