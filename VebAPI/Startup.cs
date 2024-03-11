@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
+using WebAPI.Middelwares;
 
 namespace WebAPI;
 
@@ -32,6 +33,7 @@ public class Startup
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPI v1"));
         }
 
+        app.UseMiddleware<ErrorHandlingMiddelware>();
         app.UseHttpsRedirection();
 
         app.UseRouting();

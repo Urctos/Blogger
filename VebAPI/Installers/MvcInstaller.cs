@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
+using WebAPI.Middelwares;
 
 namespace WebAPI.Installers;
 
@@ -27,6 +28,7 @@ public class MvcInstaller : IInstaller
         services.AddAuthorization();
 
         services.TryAddTransient<UserResolverService>();
+        services.AddScoped<ErrorHandlingMiddelware>();
 
         services.AddApiVersioning(x =>
         {

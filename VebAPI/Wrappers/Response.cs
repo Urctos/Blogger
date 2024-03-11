@@ -1,6 +1,8 @@
-﻿namespace WebAPI.Wrappers
+﻿using Microsoft.AspNetCore.Components.Web;
+
+namespace WebAPI.Wrappers
 {
-    public class Response<T>
+    public class Response<T> :Response
     {
         public T Data { get; set; }
         public bool Succeeded { get; set; }
@@ -8,7 +10,7 @@
         public IEnumerable<string> Errors { get; set; }
         public Response()
         {
-            
+
         }
 
         public Response(T data)
@@ -17,4 +19,22 @@
             Succeeded = true;
         }
     }
+
+    public class Response
+    {
+        public bool Succeeded { get; set; }
+        public string Message { get; set; }
+
+        public Response()
+        {
+            
+        }
+        public Response(bool succeeded, string message)
+        {
+            Succeeded = succeeded;
+            Message = message;
+           
+        }
+    }
 }
+
