@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.OData;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using WebAPI.Middelwares;
+using Application.Dto;
 
 namespace WebAPI;
 
@@ -48,7 +49,7 @@ public class Startup
     public static IEdmModel GetEdmModel()
     {
         var builder = new ODataConventionModelBuilder();
-        builder.EntitySet<Application.Dto.PostDto>("Posts");
+        builder.EntitySet<PostDto>("Posts");
         return builder.GetEdmModel();
     }
 }

@@ -23,6 +23,9 @@ public class Post : AuditableEntity
     [MaxLength(450)]
     public string UserId { get; set; }
 
+    public ICollection<Picture> Pictures { get; set; }
+    public ICollection<Attachment> Attachments { get; set; }
+
     public Post()
     {      
     }
