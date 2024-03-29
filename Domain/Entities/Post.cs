@@ -13,6 +13,7 @@ public class Post : AuditableEntity
 
     [Required]
     [MaxLength(100)]
+    [MinLength(3)]
     public string? Title { get; set; }
 
     [Required]

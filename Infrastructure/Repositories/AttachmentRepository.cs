@@ -1,7 +1,8 @@
-﻿using Application.Interfaces;
+﻿
 using Domain.Entities;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using Domain.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Infrastructure.Repositories
 {
     public class AttachmentRepository : IAttachmentRepository
     {
-        private readonly BloggerContext _context;
+    private readonly BloggerContext _context;
 
         public AttachmentRepository(BloggerContext context)
         {

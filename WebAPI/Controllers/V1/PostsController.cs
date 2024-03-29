@@ -1,5 +1,6 @@
 ﻿using Application.Dto;
 using Application.Interfaces;
+using Application.Validators;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -78,6 +79,18 @@ public class PostsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreatePostDto newPost)
     {
+        var validator = new CreatePostDtoValidator();
+        var result = validator.Validate(newPost);
+        if (!result.IsValid)
+        {
+            return BadRequest(new Response<bool>
+            {
+                Succeeded = false,
+                Message = " Something went wrong!",
+                Errors = result.Errors.Select(x =>  x.ErrorMessage)
+            });
+        }
+
         var post = await _postService.AddNewPostAsync(newPost, User.FindFirstValue(ClaimTypes.NameIdentifier));
         return Created($"api/posts/{post.Id}",new Response<PostDto>(post));
     }
