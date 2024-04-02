@@ -1,0 +1,31 @@
+﻿
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Azure.Documents;
+using System.Collections.Generic;
+using WebAPI.Wrappers;
+
+namespace WebAPI.Attributes
+{
+    public class ValidateFilterAttribute : ResultFilterAttribute
+    {
+        public override void OnResultExecuting(ResultExecutingContext context)
+        {
+            base.OnResultExecuting(context);
+
+            if (!context.ModelState.IsValid)
+            {
+
+                var entry = context.ModelState.Values.FirstOrDefault();
+
+                context.Result = new BadRequestObjectResult(new Response<bool>
+                {
+                    Succeeded = false,
+                    Message = "Something wrong. ",
+                    Errors = entry.Errors.Select(x => x.ErrorMessage)
+                });    
+            }
+
+        }
+    }
+}

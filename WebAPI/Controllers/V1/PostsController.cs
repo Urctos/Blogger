@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Security.Claims;
+using WebAPI.Attributes;
 using WebAPI.Filters;
 using WebAPI.Helpers;
 using WebAPI.Wrappers;
@@ -73,24 +74,12 @@ public class PostsController : ControllerBase
         return Ok(new Response<PostDto>(post));
     }
 
-
+    [ValidateFilter]
     [SwaggerOperation(Summary = "Create a new post")]
     [Authorize(Roles = UserRoles.User)]
     [HttpPost]
     public async Task<IActionResult> Create(CreatePostDto newPost)
     {
-        var validator = new CreatePostDtoValidator();
-        var result = validator.Validate(newPost);
-        if (!result.IsValid)
-        {
-            return BadRequest(new Response<bool>
-            {
-                Succeeded = false,
-                Message = " Something went wrong!",
-                Errors = result.Errors.Select(x =>  x.ErrorMessage)
-            });
-        }
-
         var post = await _postService.AddNewPostAsync(newPost, User.FindFirstValue(ClaimTypes.NameIdentifier));
         return Created($"api/posts/{post.Id}",new Response<PostDto>(post));
     }
