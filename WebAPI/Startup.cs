@@ -4,6 +4,12 @@ using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using WebAPI.Middelwares;
 using Application.Dto;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.OData.ModelBuilder.Core.V1;
+using Microsoft.OData.Edm.Vocabularies;
+using Newtonsoft.Json;
+using WebAPI.HealthChecks;
+using HealthChecks.UI.Client;
 
 namespace WebAPI;
 
@@ -35,6 +41,30 @@ public class Startup
         }
 
         app.UseMiddleware<ErrorHandlingMiddelware>();
+
+        //app.UseHealthChecks("/health", new HealthCheckOptions
+        //{
+        //    ResponseWriter = async (contex, report) =>
+        //    {
+        //        contex.Response.ContentType = "application/json";
+
+        //        var response = new HealthCheckResponse
+        //        {
+        //            Status = report.Status.ToString(),
+        //            Checks = report.Entries.Select(x => new HealthCheck
+        //            {
+        //                Component = x.Key,
+        //                Status = x.Value.Status.ToString(),
+        //                Description = x.Value.Description
+        //            }),
+        //            Duration = report.TotalDuration
+        //        };
+        //        await contex.Response.WriteAsync(JsonConvert.SerializeObject(response));
+        //    }
+        //});
+
+
+
         app.UseHttpsRedirection();
 
         app.UseRouting();
@@ -44,6 +74,13 @@ public class Startup
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+            endpoints.MapHealthChecks("/health", new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+            endpoints.MapHealthChecksUI();
+
         });
     }
     public static IEdmModel GetEdmModel()
