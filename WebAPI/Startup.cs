@@ -28,6 +28,12 @@ public class Startup
         services.InstallServicesInAssembly(Configuration);
         services.AddControllers().AddOData(opt => opt.Count().Filter().OrderBy().Expand().SetMaxTop(100)
                                  .AddRouteComponents("odata", GetEdmModel()));
+        services.AddLogging(loggingBuilder =>
+        {
+            loggingBuilder.AddConfiguration(Configuration.GetSection("Logging"));
+            loggingBuilder.AddConsole(); // Logi na konsoli
+            loggingBuilder.AddDebug();   // Logi debugowania
+        });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

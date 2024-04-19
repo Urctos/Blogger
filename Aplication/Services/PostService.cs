@@ -4,6 +4,7 @@ using AutoMapper;
 using AutoMapper.Execution;
 using Domain.Entities;
 using Domain.Interfaces;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,22 +15,29 @@ namespace Application.Services;
 
 public class PostService : IPostService
 {
+
+
+    private readonly IPostRepository _postRepository;
+    private readonly IMapper _mapper;
+    private readonly ILogger _logger;
+    public PostService(IPostRepository postRepository, IMapper mapper, ILogger<PostService> logger)
+    {
+        _postRepository = postRepository;
+        _mapper = mapper;
+        _logger = logger;
+    }
+
     public IQueryable<PostDto> GetAllPosts()
     {
         var posts = _postRepository.GetAll();
         return _mapper.ProjectTo<PostDto>(posts);
     }
 
-    private readonly IPostRepository _postRepository;
-    private readonly IMapper _mapper;
-    public PostService(IPostRepository postRepository, IMapper mapper)
-    {
-        _postRepository = postRepository;
-        _mapper = mapper;
-    }
-
     public async Task<IEnumerable<PostDto>> GetAllPostAsync(int pageNumber, int pageSize, string sortField, bool ascending, string filterBy)
     {
+        _logger.LogDebug("Fetching posts.");
+        _logger.LogInformation($"pageNumber: {pageNumber} | page size: {pageSize}");
+
         var posts = await _postRepository.GetAllAsync(pageNumber, pageSize, sortField, ascending, filterBy);
         return _mapper.Map<IEnumerable<PostDto>>(posts);
     }
