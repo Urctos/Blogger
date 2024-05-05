@@ -46,7 +46,7 @@ namespace WebAPI.Installers
             });
 
             services.AddOdataSwaggerSupport();
-            services.AddSwaggerExamplesFromAssemblyOf<Startup>();
+            services.AddSwaggerExamplesFromAssemblyOf<Program>();
         }
     }
 }

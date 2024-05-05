@@ -4,12 +4,9 @@ using Application.Validators;
 using FluentValidation.AspNetCore;
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Versioning;
-using Microsoft.AspNetCore.OData;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.OData.Edm;
-using Microsoft.OData.ModelBuilder;
-using WebAPI.Middelwares;
+using WebAPI.Middlewares;
+
 
 namespace WebAPI.Installers;
 
@@ -37,7 +34,7 @@ public class MvcInstaller : IInstaller
         services.AddAuthorization();
 
         services.TryAddTransient<UserResolverService>();
-        services.AddScoped<ErrorHandlingMiddelware>();
+        services.AddScoped<ErrorHandlingMiddleware>();
 
         services.AddApiVersioning(x =>
         {

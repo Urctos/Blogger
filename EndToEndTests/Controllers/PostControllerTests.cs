@@ -16,6 +16,7 @@ using WebAPI.Wrappers;
 using WebAPI.Helpers;
 using Xunit;
 using System.Net.Http.Headers;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
 
 namespace EndToEndTests.Controllers
 {
@@ -26,7 +27,7 @@ namespace EndToEndTests.Controllers
         public PostControllerTests()
         {
             // Arrage
-            var projectDir = Helper.GetProjectPath("", typeof(Startup).GetTypeInfo().Assembly);
+            var projectDir = Helper.GetProjectPath("", typeof(Program).GetTypeInfo().Assembly);
             _server = new TestServer(new WebHostBuilder()
                 .UseEnvironment("Development")
                 .UseContentRoot(projectDir)
@@ -35,7 +36,7 @@ namespace EndToEndTests.Controllers
                     .AddJsonFile("appsettings.json")
                     .Build()
                 )
-                .UseStartup<Startup>());
+                .UseStartup<Program>());
             _client = _server.CreateClient();
         }
 
