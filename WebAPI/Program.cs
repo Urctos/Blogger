@@ -1,3 +1,4 @@
+using NLog;
 using NLog.Web;
 
 namespace WebAPI
@@ -6,11 +7,12 @@ namespace WebAPI
     {
         public static void Main(string[] args)
         {
-            var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            //var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+            var logger = LogManager.Setup().LoadConfigurationFromAppSettings().GetCurrentClassLogger();
 
             try
             {
-                throw new Exception("Fatal error!");
+                //throw new Exception("Fatal error!");
                 CreateHostBuilder(args).Build().Run();
             }
             catch (Exception ex)

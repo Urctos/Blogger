@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.Extensions.Caching.Memory;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Security.Claims;
 using WebAPI.Attributes;
+using WebAPI.Cache;
 using WebAPI.Filters;
 using WebAPI.Helpers;
 using WebAPI.Wrappers;
@@ -24,9 +26,13 @@ namespace WebAPI.Controllers.V1;
 public class PostsController : ControllerBase
 {
     private readonly IPostService _postService;
-    public PostsController(IPostService postService)
+    private readonly IMemoryCache _memoryCache;
+    private readonly ILogger _logger;
+    public PostsController(IPostService postService, IMemoryCache memoryCache, ILogger<PostsController> logger )
     {
         _postService = postService;
+        _memoryCache = memoryCache;
+        _logger = logger;
     }
 
     //[SwaggerOperation(Summary = "Retrieves sort fields")]
@@ -36,7 +42,10 @@ public class PostsController : ControllerBase
     //    return Ok(SortingHelper.GetSortFields().Select(x => x.Key));
     //}
 
+
+
     [SwaggerOperation(Summary = "Retrieves paged posts")]
+    [Cached(600)]
     [HttpGet("Get")]
     public async Task<IActionResult> Get([FromQuery] PaginationFilter paginationFilter, [FromQuery] SortingFilter sortingFilter, [FromQuery] string filterBy = "")
     {
@@ -58,7 +67,21 @@ public class PostsController : ControllerBase
     [EnableQuery]
     public IQueryable<PostDto> GetAll()
     {
-        return _postService.GetAllPosts();
+        var posts = _memoryCache.Get<IQueryable<PostDto>>("posts");
+        if (posts == null)
+        {
+            _logger.LogInformation("Fetching from service.");
+            posts = _postService.GetAllPosts();
+            _memoryCache.Set("posts", posts, TimeSpan.FromMinutes(1));
+        }
+        else
+        {
+            _logger.LogInformation("Fetching from cache");
+        }
+
+ 
+
+        return posts;
     }
 
     [SwaggerOperation(Summary = "Retrieves a specific post by unique Id")]

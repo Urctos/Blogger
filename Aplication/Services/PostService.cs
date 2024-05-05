@@ -48,6 +48,7 @@ public class PostService : IPostService
         //{
         //    throw new Exception("Post can not have an empty title.");
         //}
+
             var post = _mapper.Map<Post>(newPost);
             post.UserId = userId;
             var result = await _postRepository.AddAsync(post);
